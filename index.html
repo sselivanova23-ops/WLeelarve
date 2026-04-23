@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEBLock projektide eelarved</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f2ec;font-family:'Noto Sans',sans-serif;color:#1a1612}
+.wrap{padding:1.5rem 2rem;max-width:920px;margin:0 auto}
+.tabs{display:flex;gap:0;margin-bottom:0}
+.tab{padding:8px 20px;font-family:'Noto Sans',sans-serif;font-size:12.5px;font-weight:500;background:#e5e0d5;border:1px solid #c9c2b0;border-bottom:none;cursor:pointer;color:#7a6f5e;position:relative;top:1px;border-radius:4px 4px 0 0;margin-right:3px;outline:none;appearance:none;-webkit-appearance:none}
+.tab.active{background:#f5f2ec;color:#1a1612;border-bottom:1px solid #f5f2ec;z-index:2}
+.card{background:#f5f2ec;border:1px solid #c9c2b0;border-radius:0 6px 6px 6px;padding:20px;position:relative;z-index:1}
+.ruled-head{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:12px;margin-bottom:16px;border-bottom:2.5px solid #1a1612}
+.proj-title{font-size:18px;font-weight:600;color:#1a1612;line-height:1.2}
+.proj-sub{font-size:12px;font-weight:400;color:#7a6f5e;margin-top:3px}
+.proj-date{font-family:'DM Mono',monospace;font-size:9.5px;color:#aaa89a;text-transform:uppercase;letter-spacing:0.08em;text-align:right}
+.proj-ref{font-family:'DM Mono',monospace;font-size:9px;color:#ccc5b0;margin-top:2px;text-align:right}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid #c9c2b0;border-radius:4px;overflow:hidden;margin-bottom:18px}
+.stat{padding:11px 14px;border-right:1px solid #c9c2b0;background:#fff}
+.stat:last-child{border-right:none}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.09em;color:#aaa89a;margin-bottom:4px}
+.stat-val{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:#1a1612}
+.stat-val.green{color:#2d5a1b}
+.stat-val.red{color:#8b2020}
+.stat-bar{height:3px;background:#e8e3d8;border-radius:2px;margin-top:5px;overflow:hidden}
+.stat-fill{height:100%;border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1.5px solid #1a1612}
+th{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.09em;color:#aaa89a;padding:6px 6px 5px;text-align:left;white-space:nowrap}
+th.r{text-align:right}
+td{padding:6px 6px;border-bottom:0.5px solid #e0dbd0;color:#1a1612;vertical-align:middle;font-size:12px}
+td.r{text-align:right;font-family:'DM Mono',monospace;font-size:11.5px}
+td.nr{font-family:'DM Mono',monospace;font-size:10px;color:#ccc5b0;width:22px}
+td.ok{color:#2d5a1b}
+td.bad{color:#8b2020}
+td.muted{color:#aaa89a}
+tr.sec td{background:#ede9e0;font-size:11px;font-weight:600;color:#7a6f5e;padding:4px 6px;text-transform:uppercase;letter-spacing:0.06em}
+tr.data:hover td{background:#faf8f3}
+tr.tot td{background:#1a1612;color:#f5f2ec;font-size:12.5px;font-weight:500;padding:7px 6px;border:none}
+tr.tot td.r{font-family:'DM Mono',monospace;color:#f5f2ec}
+.form-section{margin-top:20px;padding-top:16px;border-top:1px solid #ddd8cc}
+.form-title{font-size:11px;font-weight:600;color:#7a6f5e;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px}
+.form-grid{display:grid;grid-template-columns:110px 1fr 100px 1fr auto;gap:8px;align-items:end}
+.form-grid label{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:#aaa89a;display:block;margin-bottom:4px}
+.form-grid input,.form-grid select{width:100%;font-size:12px;padding:6px 8px;border:none;border-bottom:1px solid #c9c2b0;background:transparent;color:#1a1612;font-family:'Noto Sans',sans-serif;outline:none;border-radius:0}
+.form-grid input:focus,.form-grid select:focus{border-bottom-color:#1a1612}
+.btn-add{padding:7px 14px;font-family:'Noto Sans',sans-serif;font-size:12px;font-weight:500;background:#1a1612;color:#f5f2ec;border:none;border-radius:3px;cursor:pointer;white-space:nowrap;align-self:end}
+.btn-add:hover{background:#2e2820}
+.btn-add:disabled{background:#aaa89a;cursor:not-allowed}
+.log-section{margin-top:16px}
+.log-head{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.09em;color:#aaa89a;padding-bottom:6px;border-bottom:0.5px solid #e0dbd0}
+.log-empty{font-size:12px;color:#ccc5b0;padding:12px 0;text-align:center}
+.log-row{display:grid;grid-template-columns:88px 52px 94px 1fr 24px;gap:8px;padding:6px 0;border-bottom:0.5px solid #f0ece3;align-items:center}
+.log-row:last-child{border-bottom:none}
+.log-date{font-family:'DM Mono',monospace;font-size:10.5px;color:#7a6f5e}
+.log-nr{font-family:'DM Mono',monospace;font-size:10px;color:#aaa89a;text-align:center;border:0.5px solid #e0dbd0;border-radius:2px;padding:1px 4px}
+.log-sum{font-family:'DM Mono',monospace;font-size:11px;text-align:right;color:#1a1612}
+.log-kom{font-size:12px;color:#7a6f5e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.del{background:none;border:0.5px solid #e0dbd0;border-radius:3px;cursor:pointer;color:#aaa89a;font-size:13px;line-height:1;padding:2px 5px;width:24px;text-align:center}
+.del:hover{color:#8b2020;border-color:#8b2020}
+.status{font-family:'DM Mono',monospace;font-size:9px;color:#aaa89a;margin-top:6px;min-height:14px}
+.status.err{color:#8b2020}
+.status.ok{color:#2d5a1b}
+.foot{font-family:'DM Mono',monospace;font-size:9px;color:#ccc5b0;text-align:right;margin-top:14px;letter-spacing:0.04em;text-transform:uppercase}
+.spinner{display:inline-block;width:10px;height:10px;border:1.5px solid #ccc5b0;border-top-color:#7a6f5e;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:5px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" id="tab0" onclick="showP(0)">Liimi tn 1b, Tallinn</button>
+    <button class="tab" id="tab1" onclick="showP(1)">Pikk tn 39, Tartu</button>
+  </div>
+  <div class="card">
+    <div id="pview"><div style="padding:2rem;text-align:center;color:#aaa89a;font-family:'DM Mono',monospace;font-size:12px"><span class="spinner"></span>Laen andmeid...</div></div>
+    <div class="foot">Koostatud aprill 2026 · ostuhindadel põhinev kalkulatsioon</div>
+  </div>
+</div>
+
+<script>
+const API_KEY = '$2a$10$DRMeE8KqUepeYU7oKPRz7.0QU2dm.Ib3d0fjZWE/6/.IGghQZX8R2';
+const BIN_NAME = 'weblock-eelarve';
+let BIN_ID = localStorage.getItem('weblock_bin_id') || null;
+
+const PROJ = [
+  {
+    title:"Liimi tn 1b, Tallinn", sub:"Liimi maja läbipääsu vahetus", ref:"EE-2026-02",
+    rows:[
+      {s:"Seadmed"},
+      {nr:1,sisu:"Shield lingiarnituur euro, vasak, 72mm, must",kogus:100,yhik:"tk",hind:265.00},
+      {nr:2,sisu:"Shield lingiarnituur euro, parem, 72mm, must",kogus:152,yhik:"tk",hind:265.00},
+      {nr:3,sisu:"HUB WebLock Shield BT5 188x65x23 WIFI + toide",kogus:65,yhik:"tk",hind:82.50},
+      {nr:4,sisu:"WebLock kahe koodpaneeli/kaardilugejaga, must",kogus:11,yhik:"tk",hind:254.00},
+      {nr:5,sisu:"WebLock komplekt Wifi/Eth + koodpaneel/kaardilugeja",kogus:2,yhik:"tk",hind:187.00},
+      {nr:6,sisu:"WebLock katteplaat",kogus:504,yhik:"tk",hind:10.00},
+      {nr:7,sisu:"Südamik",kogus:252,yhik:"tk",hind:70.00},
+      {s:"Paigaldustööd, programmeerimine ja koolitus"},
+      {nr:8,sisu:"Paigaldustööd",kogus:1030,yhik:"punkt",hind:16.00},
+      {nr:9,sisu:"Installatsioonmaterjal",kogus:5,yhik:"kompl",hind:50.00},
+    ]
+  },
+  {
+    title:"Pikk tn 39, Tartu", sub:"Raatuse residentsid — läbipääs", ref:"EE-2026-01",
+    rows:[
+      {s:"Hub-id ja Shield-id"},
+      {nr:1,sisu:"HUB WebLock Shield BT5 188x65x23 WIFI + toide",kogus:15,yhik:"tk",hind:82.50},
+      {nr:2,sisu:"Shield lingiarnituur Scan, südamikuavaga",kogus:80,yhik:"tk",hind:230.55},
+      {nr:3,sisu:"Varutoide, toiteplokk ja kilp",kogus:5,yhik:"kompl",hind:100.00},
+      {nr:4,sisu:"Installatsioonmaterjal",kogus:5,yhik:"kompl",hind:50.00},
+      {s:"Seadmed 1 korrus"},
+      {nr:5,sisu:"WebLock with 2 code+card readers, black",kogus:4,yhik:"tk",hind:254.00},
+      {nr:6,sisu:"Installatsioonmaterjal",kogus:2,yhik:"kompl",hind:50.00},
+      {nr:7,sisu:"Toiteplokk 12V/10A",kogus:1,yhik:"tk",hind:56.00},
+      {nr:8,sisu:"Varutoite aku 12V/24Ah",kogus:1,yhik:"tk",hind:80.00},
+      {s:"Paigaldustööd, programmeerimine ja koolitus"},
+      {nr:9,sisu:"Paigaldustööd",kogus:390,yhik:"punkt",hind:22.00},
+      {nr:10,sisu:"Installatsioonmaterjal",kogus:6,yhik:"kompl",hind:50.00},
+      {nr:11,sisu:"Transport",kogus:1,yhik:"punkt",hind:400.00},
+    ]
+  }
+];
+
+let kulud = [{}, {}];
+let curP = 0;
+
+const fmt = v => v.toLocaleString('et-EE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+const today = () => new Date().toISOString().split('T')[0];
+function items(p){return p.rows.filter(r=>r.nr!==undefined)}
+function getK(pi,nr){return(kulud[pi][nr]||[]).reduce((s,e)=>s+e.sum,0)}
+function totalB(pi){return items(PROJ[pi]).reduce((s,r)=>s+r.kogus*r.hind,0)}
+function totalK(pi){return items(PROJ[pi]).reduce((s,r)=>s+getK(pi,r.nr),0)}
+
+async function loadData() {
+  if (!BIN_ID) {
+    await createBin();
+    return;
+  }
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: {'X-Master-Key': API_KEY}
+    });
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    kulud = data.record.kulud || [{},{}];
+    render();
+  } catch(e) {
+    BIN_ID = null;
+    localStorage.removeItem('weblock_bin_id');
+    await createBin();
+  }
+}
+
+async function createBin() {
+  try {
+    const res = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY,
+        'X-Bin-Name': BIN_NAME,
+        'X-Bin-Private': 'false'
+      },
+      body: JSON.stringify({kulud: [{},{}]})
+    });
+    const data = await res.json();
+    BIN_ID = data.metadata.id;
+    localStorage.setItem('weblock_bin_id', BIN_ID);
+    kulud = [{},{}];
+    render();
+  } catch(e) {
+    document.getElementById('pview').innerHTML = '<div style="padding:2rem;text-align:center;color:#8b2020;font-size:12px">Ühenduse viga. Kontrolli internetiühendust.</div>';
+  }
+}
+
+async function saveData(statusEl) {
+  if (!BIN_ID) return;
+  try {
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': API_KEY
+      },
+      body: JSON.stringify({kulud})
+    });
+    if (statusEl) { statusEl.className='status ok'; statusEl.textContent='Salvestatud'; setTimeout(()=>statusEl.textContent='',2000); }
+  } catch(e) {
+    if (statusEl) { statusEl.className='status err'; statusEl.textContent='Salvestamine ebaõnnestus'; }
+  }
+}
+
+function render() {
+  const pi = curP, proj = PROJ[pi];
+  const budget = totalB(pi), kulu = totalK(pi), jaak = budget - kulu;
+  const pct = budget > 0 ? Math.min(100,(kulu/budget)*100) : 0;
+  const bc = jaak < 0 ? '#8b2020' : (pct > 80 ? '#9a6b0a' : '#2d5a1b');
+
+  let rows = '';
+  proj.rows.forEach(r => {
+    if (r.s !== undefined) {
+      rows += `<tr class="sec"><td colspan="6">${r.s}</td></tr>`;
+    } else {
+      const b = r.kogus*r.hind, k = getK(pi,r.nr), j = b-k;
+      rows += `<tr class="data">
+        <td class="nr">${r.nr}</td>
+        <td>${r.sisu}</td>
+        <td class="r muted">${r.kogus} ${r.yhik}</td>
+        <td class="r">${fmt(b)}</td>
+        <td class="r ${k>0?'':'muted'}">${k>0?fmt(k):'—'}</td>
+        <td class="r ${k>0?(j>=0?'ok':'bad'):'muted'}">${k>0?fmt(j):'—'}</td>
+      </tr>`;
+    }
+  });
+
+  const logItems = items(proj).flatMap(r=>(kulud[pi][r.nr]||[]).map(e=>({...e,nr:r.nr})))
+    .sort((a,b)=>b.date.localeCompare(a.date));
+
+  const logHtml = logItems.length === 0
+    ? `<div class="log-empty">Ükski kulu pole veel lisatud</div>`
+    : logItems.map(e=>`<div class="log-row">
+        <span class="log-date">${e.date}</span>
+        <span class="log-nr">#${e.nr}</span>
+        <span class="log-sum">${fmt(e.sum)}</span>
+        <span class="log-kom">${e.kom||'—'}</span>
+        <button class="del" onclick="delEntry(${pi},${e.nr},'${e.id}')">×</button>
+      </div>`).join('');
+
+  const nrOpts = items(proj).map(r=>`<option value="${r.nr}">${r.nr} — ${r.sisu.slice(0,38)}</option>`).join('');
+
+  document.getElementById('pview').innerHTML = `
+    <div class="ruled-head">
+      <div>
+        <div class="proj-title">${proj.title}</div>
+        <div class="proj-sub">${proj.sub}</div>
+      </div>
+      <div>
+        <div class="proj-date">Aprill 2026</div>
+        <div class="proj-ref">${proj.ref}</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-lbl">Eelarve</div><div class="stat-val">${fmt(budget)}</div></div>
+      <div class="stat">
+        <div class="stat-lbl">Kulutatud</div>
+        <div class="stat-val ${kulu>0?(jaak>=0?'green':'red'):''}">${kulu>0?fmt(kulu):'—'}</div>
+        ${kulu>0?`<div class="stat-bar"><div class="stat-fill" style="width:${pct.toFixed(1)}%;background:${bc}"></div></div>`:''}
+      </div>
+      <div class="stat"><div class="stat-lbl">Jääk</div><div class="stat-val ${kulu>0?(jaak>=0?'green':'red'):''}">${kulu>0?fmt(jaak):'—'}</div></div>
+    </div>
+    <table>
+      <colgroup><col style="width:22px"><col><col style="width:72px"><col style="width:88px"><col style="width:88px"><col style="width:78px"></colgroup>
+      <thead><tr><th></th><th>Kirjeldus</th><th class="r">Kogus</th><th class="r">Eelarve</th><th class="r">Kulutatud</th><th class="r">Jääk</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr class="tot"><td></td><td>Kokku</td><td></td><td class="r">${fmt(budget)}</td><td class="r">${kulu>0?fmt(kulu):'—'}</td><td class="r">${kulu>0?fmt(jaak):'—'}</td></tr></tfoot>
+    </table>
+    <div class="form-section">
+      <div class="form-title">Kande lisamine</div>
+      <div class="form-grid">
+        <div><label>Kuupäev</label><input type="date" id="fd" value="${today()}"></div>
+        <div><label>Eelarve rida</label><select id="fnr">${nrOpts}</select></div>
+        <div><label>Summa €</label><input type="number" id="fsum" min="0" step="0.01" placeholder="0.00"></div>
+        <div><label>Kommentaar</label><input type="text" id="fkom" placeholder="märkus"></div>
+        <button class="btn-add" id="btn-add" onclick="addEntry(${pi})">Lisa</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="log-section">
+      <div class="log-head">Kulupäevik — ${logItems.length} kirjet</div>
+      ${logHtml}
+    </div>`;
+}
+
+async function addEntry(pi) {
+  const date = document.getElementById('fd').value;
+  const nr = parseInt(document.getElementById('fnr').value);
+  const sum = parseFloat(document.getElementById('fsum').value);
+  const kom = document.getElementById('fkom').value.trim();
+  if (!date || isNaN(sum) || sum <= 0) return;
+
+  const btn = document.getElementById('btn-add');
+  const statusEl = document.getElementById('status');
+  btn.disabled = true;
+  btn.textContent = 'Salvestan...';
+  statusEl.className = 'status';
+  statusEl.innerHTML = '<span class="spinner"></span>Salvestan...';
+
+  if (!kulud[pi][nr]) kulud[pi][nr] = [];
+  kulud[pi][nr].push({id: Date.now()+'', date, sum, kom});
+
+  await saveData(statusEl);
+  document.getElementById('fsum').value = '';
+  document.getElementById('fkom').value = '';
+  btn.disabled = false;
+  btn.textContent = 'Lisa';
+  render();
+  document.getElementById('status').className = 'status ok';
+  document.getElementById('status').textContent = 'Salvestatud';
+  setTimeout(() => { const s = document.getElementById('status'); if(s) s.textContent = ''; }, 2000);
+}
+
+async function delEntry(pi, nr, id) {
+  if (!confirm('Kustuta see kulu kirje?')) return;
+  kulud[pi][nr] = (kulud[pi][nr]||[]).filter(e=>e.id!==id);
+  await saveData(null);
+  render();
+}
+
+function showP(pi) {
+  curP = pi;
+  document.getElementById('tab0').classList.toggle('active', pi===0);
+  document.getElementById('tab1').classList.toggle('active', pi===1);
+  render();
+}
+
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
